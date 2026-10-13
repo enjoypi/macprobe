@@ -30,16 +30,21 @@ impl Probe for Fake {
     }
 }
 
+impl Inspector for Fake {
+    fn inspect(&self, _ctx: &Ctx) {
+        self.calls.set(self.calls.get() + 1);
+    }
+}
+
 fn exit_of(statuses: &[Status]) -> (u8, Vec<Value>) {
     let fakes: Vec<Fake> = statuses.iter().map(|s| Fake::new(*s)).collect();
     let probes: Vec<&dyn Probe> = fakes.iter().map(|f| f as &dyn Probe).collect();
     let mut code = 0;
     let logs = capture(LevelFilter::INFO, || {
-        code = run(&[], &cfg(), &ctx(), &probes)
+        code = run(&[], &cfg(), &ctx(), &[], &probes)
     });
     (code, logs)
 }
-
 #[test]
 fn all_granted_exits_granted() {
     assert_eq!(
@@ -77,11 +82,23 @@ fn args_are_usage_error_without_probing() {
     let fake = Fake::new(Status::Granted);
     let mut code = 0;
     let logs = capture(LevelFilter::INFO, || {
-        code = run(&["-x".into()], &cfg(), &ctx(), &[&fake])
+        code = run(&["-x".into()], &cfg(), &ctx(), &[&fake], &[&fake])
     });
     assert_eq!(code, cfg().exit.unknown);
     assert_eq!(logs.len(), 1);
     assert_eq!(fake.calls.get(), 0);
+}
+
+#[test]
+fn check_runs_inspectors_without_affecting_exit() {
+    let inspector = Fake::new(Status::Unknown);
+    let probe = Fake::new(Status::Granted);
+    let mut code = 0;
+    capture(LevelFilter::INFO, || {
+        code = run(&[], &cfg(), &ctx(), &[&inspector], &[&probe])
+    });
+    assert_eq!(code, cfg().exit.granted);
+    assert_eq!((inspector.calls.get(), probe.calls.get()), (1, 1));
 }
 
 fn run_args(args: &[&str]) -> (u8, Vec<Value>, u32) {
@@ -89,7 +106,7 @@ fn run_args(args: &[&str]) -> (u8, Vec<Value>, u32) {
     let args: Vec<String> = args.iter().map(|a| a.to_string()).collect();
     let mut code = 0;
     let logs = capture(LevelFilter::INFO, || {
-        code = run(&args, &cfg(), &ctx(), &[&fake])
+        code = run(&args, &cfg(), &ctx(), &[&fake], &[&fake])
     });
     (code, logs, fake.calls.get())
 }

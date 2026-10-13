@@ -4,6 +4,7 @@ const EMBEDDED: &str = include_str!("../config/default.yaml");
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
+    pub lineage: LineageConfig,
     pub tcc: TccConfig,
     pub fda: FdaConfig,
     pub ax: AxConfig,
@@ -12,6 +13,20 @@ pub struct Config {
     pub exit: ExitConfig,
     pub messages: Messages,
     pub log: LogConfig,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct LineageConfig {
+    pub id: String,
+    pub name: String,
+    pub library: String,
+    pub symbol: String,
+    pub dlopen_mode: i32,
+    pub bsdinfo_flavor: i32,
+    pub path_max: usize,
+    pub root_pid: i32,
+    pub max_depth: usize,
+    pub separator: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]

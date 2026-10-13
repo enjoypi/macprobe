@@ -14,6 +14,12 @@ fn embedded_has_expected_values() {
     );
     assert_eq!(c.fda.denied_errno, vec![1]);
     assert_eq!(c.ax.id, "accessibility");
+    assert_eq!(c.lineage.id, "responsible_process");
+    assert_eq!(
+        c.lineage.symbol,
+        "responsibility_get_pid_responsible_for_pid"
+    );
+    assert_eq!((c.lineage.root_pid, c.lineage.bsdinfo_flavor), (1, 3));
     assert_eq!(c.devtools.command, "/usr/sbin/DevToolsSecurity");
     assert_eq!(c.devtools.args, vec!["-status"]);
     assert_eq!((c.exit.granted, c.exit.denied, c.exit.unknown), (0, 1, 2));

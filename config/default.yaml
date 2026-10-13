@@ -1,3 +1,14 @@
+lineage:
+  id: responsible_process
+  name: 判定对象（负责进程）
+  library: /usr/lib/libSystem.B.dylib
+  symbol: responsibility_get_pid_responsible_for_pid
+  dlopen_mode: 1
+  bsdinfo_flavor: 3
+  path_max: 4096
+  root_pid: 1
+  max_depth: 64
+  separator: " < "
 tcc:
   id: developer_tool
   name: 开发者工具（按宿主终端或 IDE 判定）

@@ -30,6 +30,7 @@ fn default_outputs_info_json() {
     assert_eq!(
         field(&logs, "feature"),
         [
+            "responsible_process",
             "developer_tool",
             "full_disk_access",
             "accessibility",
@@ -44,7 +45,7 @@ fn debug_level_shows_details() {
     let debug: Vec<Value> = logs.into_iter().filter(|e| e["level"] == "DEBUG").collect();
     assert_eq!(
         field(&debug, "action"),
-        ["preflight", "open", "query", "exec"]
+        ["responsible", "preflight", "open", "query", "exec"]
     );
 }
 

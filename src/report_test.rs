@@ -1,4 +1,6 @@
 use super::*;
+use crate::error::ProbeError;
+use crate::lineage::{Lineage, Proc};
 use crate::support_test::{capture, cfg, ctx};
 use tracing_subscriber::filter::LevelFilter;
 
@@ -62,4 +64,49 @@ fn version_is_info() {
     assert_eq!(logs[0]["action"], "version");
     assert_eq!(logs[0]["resp"], "9.9.9");
     assert_eq!(logs[0]["message"], "macprobe 9.9.9");
+}
+
+fn traced(responsible: Result<Proc, ProbeError>) -> Vec<serde_json::Value> {
+    let c = cfg();
+    let l = Lineage {
+        responsible,
+        chain: "9 /a < 1".into(),
+    };
+    capture(LevelFilter::INFO, || {
+        lineage(&ctx(), &c.messages, &c.lineage, &l)
+    })
+}
+
+#[test]
+fn lineage_found_is_info() {
+    let c = cfg();
+    let logs = traced(Ok(Proc {
+        pid: 7,
+        path: Some("/bin/x".into()),
+    }));
+    let e = &logs[0];
+    assert_eq!(e["level"], "INFO");
+    assert_eq!(e["host"], "term");
+    assert_eq!(e["feature"], c.lineage.id);
+    assert_eq!(e["action"], "inspect");
+    assert_eq!(e["resp"], "7 /bin/x");
+    assert_eq!(e["chain"], "9 /a < 1");
+    assert_eq!(
+        e["message"],
+        format!("{}{}7 /bin/x", c.lineage.name, c.messages.separator)
+    );
+}
+
+#[test]
+fn lineage_error_is_unknown() {
+    let c = cfg();
+    let logs = traced(Err(ProbeError::ResponsibleFailed));
+    assert_eq!(logs[0]["resp"], "ResponsibleFailed");
+    assert_eq!(
+        logs[0]["message"],
+        format!(
+            "{}{}{}",
+            c.lineage.name, c.messages.separator, c.messages.unknown
+        )
+    );
 }

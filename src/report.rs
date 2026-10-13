@@ -1,4 +1,5 @@
-use crate::config::Messages;
+use crate::config::{LineageConfig, Messages};
+use crate::lineage::Lineage;
 use crate::log::Ctx;
 use crate::probe::{Outcome, Status};
 
@@ -23,6 +24,26 @@ pub fn outcome(ctx: &Ctx, m: &Messages, o: &Outcome) {
         o.name,
         m.separator,
         label(m, o.status)
+    );
+}
+
+pub fn lineage(ctx: &Ctx, m: &Messages, cfg: &LineageConfig, l: &Lineage) {
+    let (value, resp) = match &l.responsible {
+        Ok(p) => (p.label(), p.label()),
+        Err(e) => (m.unknown.clone(), format!("{e:?}")),
+    };
+    tracing::info!(
+        request_id = %ctx.request_id,
+        user = %ctx.user,
+        host = %ctx.host,
+        feature = %cfg.id,
+        action = "inspect",
+        resp = %resp,
+        chain = %l.chain,
+        "{}{}{}",
+        cfg.name,
+        m.separator,
+        value
     );
 }
 

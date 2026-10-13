@@ -1,11 +1,12 @@
 ## 设计约定
 
 - 输出只有 stdout 上的 tracing JSON Lines：每项检测一条 info 结论（`report::outcome`）与一条 debug 细节（`log::debug`）；参数错误一条 error；`--version`/`-V` 一条 info
+- 不产生授权结论的说明项实现 `Inspector`（如 `lineage`），在检测项之前输出、不参与退出码；`--version` 与参数错误时不执行
 - 退出码数值取 config `exit` 段，按 `probe::overall` 映射：任一项 unknown 或参数错误为 unknown，否则任一项 denied 为 denied，否则为 granted；版本查询为 ok
 - 检测失败（FFI、子进程、IO）归为 unknown，原因写入 detail，不 panic；panic 只用于内嵌配置损坏
 - 判定依据优先级：内核实际拦截（如 FDA 文件探测）> 公开 API > 私有 API
 - 新增检测项：
-  1. 新建 `src/<模块>.rs`：系统调用与纯函数 `classify`/`parse` 分离，实现 `Probe`，debug action 取唯一名
+  1. 新建 `src/<模块>.rs`：系统调用（FFI 放 `<模块>_ffi.rs`，dlopen 复用 `dl::Library`）与纯函数 `classify`/`parse` 分离，实现 `Probe`，debug action 取唯一名
   2. `config/default.yaml` 加一段（至少 `id`、`name`），`src/config.rs` 加结构体与字段
   3. `src/lib.rs` 声明模块，`app::main_entry` 注册；注册顺序即输出顺序
   4. `tests/cli_test.rs` 同步 feature 序列与 debug action 序列
@@ -20,6 +21,8 @@
 ## macOS 平台坑
 
 - TCC、FDA、AX 判定的都是负责进程（宿主终端或 IDE），不是本二进制；ssh、launchd 下通常为拒绝；本二进制自身为负责进程时，ad-hoc 签名重编译后 TCC 条目失配
+- 负责进程用 libSystem 私有符号 `responsibility_get_pid_responsible_for_pid` 查询，失败返回 -1；负责进程不一定在祖先链上（如 mosh、launchd 托管的进程）
+- 父进程用 `proc_pidinfo` 的 `PROC_PIDTBSDINFO` 取，返回字节数须等于结构体大小（136）；不存在的 pid 让三个进程查询函数都返回失败，测试据此覆盖
 - `DevToolsSecurity -status` 退出码恒为 0，只能整句匹配输出
 - `TCCAccessPreflight`（私有 API）对不存在的服务名也返回 1，与拒绝无法区分
 - FDA：只读 open 系统 TCC.db，仅 EPERM 为拒绝，其他 errno 为 unknown；须用 `raw_os_error` 区分（`ErrorKind::PermissionDenied` 合并了 EPERM 与 EACCES）；metadata/stat 不受 FDA 拦截；公司设备 EDR 可能对访问 TCC.db 告警

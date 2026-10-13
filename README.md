@@ -28,7 +28,8 @@ macprobe
 ```
 
 - `message`：可读结论
-- `feature`：检测项，依次为 `developer_tool`、`full_disk_access`、`accessibility`、`debug_authorization`
+- `feature`：依次为 `responsible_process`（判定对象）、`developer_tool`、`full_disk_access`、`accessibility`、`debug_authorization`
+- `chain`：仅 `responsible_process` 行有，为本进程到 launchd 的启动链，格式 `pid 路径 < pid 路径 …`
 - `status`：`granted`、`denied` 或 `unknown`
 - `timestamp`：UTC 时间
 

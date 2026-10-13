@@ -29,6 +29,10 @@ pub trait Probe {
     fn check(&self, ctx: &Ctx) -> Outcome;
 }
 
+pub trait Inspector {
+    fn inspect(&self, ctx: &Ctx);
+}
+
 pub fn overall(outcomes: &[Outcome]) -> Status {
     let has = |s: Status| outcomes.iter().any(|o| o.status == s);
     if has(Status::Unknown) {

@@ -6,4 +6,7 @@ pub enum ProbeError {
     CfStringFailed,
     SpawnFailed,
     ExitFailed,
+    ResponsibleFailed,
+    ProcInfoFailed,
+    PathFailed,
 }
