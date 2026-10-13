@@ -1,0 +1,13 @@
+[package]
+name = "macprobe"
+version = "0.3.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_yaml_ng = "0.10"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt", "json", "std"] }
+
+[dev-dependencies]
+serde_json = "1"

@@ -1,0 +1,44 @@
+tcc:
+  id: developer_tool
+  name: 开发者工具（按宿主终端或 IDE 判定）
+  framework: /System/Library/PrivateFrameworks/TCC.framework/TCC
+  symbol: TCCAccessPreflight
+  service: kTCCServiceDeveloperTool
+  dlopen_mode: 1
+  cf_encoding: 134217984
+  granted: [0]
+  denied: [1, 2]
+fda:
+  id: full_disk_access
+  name: 完全磁盘访问（按宿主终端或 IDE 判定）
+  path: /Library/Application Support/com.apple.TCC/TCC.db
+  denied_errno: [1]
+ax:
+  id: accessibility
+  name: 辅助功能（按宿主终端或 IDE 判定）
+devtools:
+  id: debug_authorization
+  name: 调试授权（DevToolsSecurity）
+  command: /usr/sbin/DevToolsSecurity
+  args: ["-status"]
+  enabled: Developer mode is currently enabled.
+  disabled: Developer mode is currently disabled.
+cli:
+  version_flags: ["--version", "-V"]
+exit:
+  ok: 0
+  granted: 0
+  denied: 1
+  unknown: 2
+messages:
+  granted: 已授予
+  denied: 未授予
+  unknown: 无法判定
+  separator: "："
+  usage: 仅支持 --version、-V 或不带参数
+log:
+  level_env: MACPROBE_LOG
+  default_level: info
+  user_env: USER
+  host_env: TERM_PROGRAM
+  unset: unknown
