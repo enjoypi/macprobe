@@ -53,7 +53,7 @@ fn check(cfg: &Config, ctx: &Ctx, probes: &[&dyn Probe]) -> u8 {
 pub fn main_entry() -> u8 {
     let cfg = config::embedded();
     log::init(&cfg.log);
-    let ctx = Ctx::from_env(&cfg.log);
+    let ctx = Ctx::generate();
     let args: Vec<String> = std::env::args().skip(1).collect();
     let lineage = LineageInspector {
         cfg: &cfg.lineage,

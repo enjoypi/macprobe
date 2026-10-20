@@ -1,5 +1,5 @@
 use super::*;
-use crate::support_test::{capture, cfg, ctx};
+use crate::support_test::{capture, ctx};
 
 #[test]
 fn level_defaults_when_unset() {
@@ -22,14 +22,8 @@ fn request_id_starts_with_pid() {
 }
 
 #[test]
-fn ctx_reads_env_or_unset() {
-    let mut c = cfg().log;
-    c.user_env = "PATH".into();
-    c.host_env = "MACPROBE_TEST_ABSENT_VAR".into();
-    let x = Ctx::from_env(&c);
-    assert_eq!(x.user, std::env::var("PATH").unwrap());
-    assert_eq!(x.host, c.unset);
-    assert!(!x.request_id.is_empty());
+fn ctx_has_request_id() {
+    assert!(!Ctx::generate().request_id.is_empty());
 }
 
 #[test]
@@ -41,7 +35,7 @@ fn debug_emits_structured_utc_json() {
     let e = &logs[0];
     assert_eq!(e["level"], "DEBUG");
     assert_eq!(e["request_id"], "rid");
-    assert_eq!(e["user"], "tester");
+    assert!(e.get("user").is_none());
     assert_eq!(e["feature"], "feat");
     assert_eq!(e["action"], "act");
     assert_eq!(e["req"], "q");

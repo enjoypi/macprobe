@@ -22,8 +22,8 @@ fn outcome_is_info_json() {
     let e = &logs[0];
     assert_eq!(e["level"], "INFO");
     assert_eq!(e["request_id"], "rid");
-    assert_eq!(e["user"], "tester");
-    assert_eq!(e["host"], "term");
+    assert!(e.get("user").is_none());
+    assert!(e.get("host").is_none());
     assert_eq!(e["feature"], "pid");
     assert_eq!(e["action"], "check");
     assert_eq!(e["status"], "granted");
@@ -86,7 +86,7 @@ fn lineage_found_is_info() {
     }));
     let e = &logs[0];
     assert_eq!(e["level"], "INFO");
-    assert_eq!(e["host"], "term");
+    assert!(e.get("host").is_none());
     assert_eq!(e["feature"], c.lineage.id);
     assert_eq!(e["action"], "inspect");
     assert_eq!(e["resp"], "7 /bin/x");

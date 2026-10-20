@@ -12,7 +12,7 @@
 10. 存储与日志时间用 UTC；面向人展示时标注时区（如 2026-07-17 09:20:09 UTC+8）并支持 TZ 环境变量
 11. 新配置文件用 yaml；默认值、数值常量、业务字符串常量从配置读取
 12. secret 只经环境变量加载、不设默认值，写法 db_password: "${DB_PASSWORD}"
-13. 输出 debug 级结构化日志（request_id、feature、user、action、req、resp 等），供 AI 分析
+13. 输出 debug 级结构化日志（request_id、feature、action、req、resp 等），供 AI 分析
 14. 测试先行：先写失败的测试再实现；覆盖率先保证 branch 100% 再保证 region 100%
 15. 测试与业务代码分文件
 16. 不自行新建 git branch 或 worktree

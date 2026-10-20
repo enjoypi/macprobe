@@ -24,7 +24,7 @@ macprobe
 每项输出一行 JSON，例如：
 
 ```
-{"timestamp":"2026-01-01T00:00:00.000000Z","level":"INFO","message":"辅助功能（按宿主终端或 IDE 判定）：已授予","request_id":"…","user":"…","host":"…","feature":"accessibility","action":"check","status":"granted","resp":"1"}
+{"timestamp":"2026-01-01T00:00:00.000000Z","level":"INFO","message":"辅助功能（按宿主终端或 IDE 判定）：已授予","request_id":"…","feature":"accessibility","action":"check","status":"granted","resp":"1"}
 ```
 
 - `message`：可读结论

@@ -14,8 +14,6 @@ fn label(m: &Messages, status: Status) -> &str {
 pub fn outcome(ctx: &Ctx, m: &Messages, o: &Outcome) {
     tracing::info!(
         request_id = %ctx.request_id,
-        user = %ctx.user,
-        host = %ctx.host,
         feature = %o.id,
         action = "check",
         status = o.status.as_str(),
@@ -34,8 +32,6 @@ pub fn lineage(ctx: &Ctx, m: &Messages, cfg: &LineageConfig, l: &Lineage) {
     };
     tracing::info!(
         request_id = %ctx.request_id,
-        user = %ctx.user,
-        host = %ctx.host,
         feature = %cfg.id,
         action = "inspect",
         resp = %resp,
@@ -50,8 +46,6 @@ pub fn lineage(ctx: &Ctx, m: &Messages, cfg: &LineageConfig, l: &Lineage) {
 pub fn priority(ctx: &Ctx, m: &Messages, cfg: &PriorityConfig, own: &str, tree: &str) {
     tracing::info!(
         request_id = %ctx.request_id,
-        user = %ctx.user,
-        host = %ctx.host,
         feature = %cfg.id,
         action = "inspect",
         resp = own,
@@ -66,7 +60,6 @@ pub fn priority(ctx: &Ctx, m: &Messages, cfg: &PriorityConfig, own: &str, tree: 
 pub fn usage(ctx: &Ctx, m: &Messages, args: &[String]) {
     tracing::error!(
         request_id = %ctx.request_id,
-        user = %ctx.user,
         feature = "cli",
         action = "parse",
         req = %args.join(" "),
@@ -78,7 +71,6 @@ pub fn usage(ctx: &Ctx, m: &Messages, args: &[String]) {
 pub fn version(ctx: &Ctx, name: &str, version: &str) {
     tracing::info!(
         request_id = %ctx.request_id,
-        user = %ctx.user,
         feature = "cli",
         action = "version",
         resp = version,

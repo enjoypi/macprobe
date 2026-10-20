@@ -47,7 +47,5 @@ pub fn cfg() -> Config {
 pub fn ctx() -> Ctx {
     Ctx {
         request_id: "rid".into(),
-        user: "tester".into(),
-        host: "term".into(),
     }
 }

@@ -58,6 +58,3 @@ messages:
 log:
   level_env: MACPROBE_LOG
   default_level: info
-  user_env: USER
-  host_env: TERM_PROGRAM
-  unset: unknown

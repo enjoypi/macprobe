@@ -104,9 +104,6 @@ pub struct Messages {
 pub struct LogConfig {
     pub level_env: String,
     pub default_level: String,
-    pub user_env: String,
-    pub host_env: String,
-    pub unset: String,
 }
 
 pub fn parse(text: &str) -> Result<Config, serde_yaml_ng::Error> {

@@ -7,17 +7,12 @@ use tracing_subscriber::fmt::MakeWriter;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Ctx {
     pub request_id: String,
-    pub user: String,
-    pub host: String,
 }
 
 impl Ctx {
-    pub fn from_env(cfg: &LogConfig) -> Ctx {
-        let read = |name: &str| std::env::var(name).unwrap_or(cfg.unset.clone());
+    pub fn generate() -> Ctx {
         Ctx {
             request_id: request_id(),
-            user: read(&cfg.user_env),
-            host: read(&cfg.host_env),
         }
     }
 }
@@ -57,7 +52,6 @@ pub fn init(cfg: &LogConfig) {
 pub fn debug(ctx: &Ctx, feature: &str, action: &str, req: &str, resp: &str) {
     tracing::debug!(
         request_id = %ctx.request_id,
-        user = %ctx.user,
         feature,
         action,
         req,
