@@ -28,8 +28,9 @@ macprobe
 ```
 
 - `message`：可读结论
-- `feature`：依次为 `responsible_process`（判定对象）、`developer_tool`、`full_disk_access`、`accessibility`、`debug_authorization`
+- `feature`：依次为 `responsible_process`（判定对象）、`process_priority`（进程优先级）、`developer_tool`、`full_disk_access`、`accessibility`、`debug_authorization`
 - `chain`：仅 `responsible_process` 行有，为本进程到 launchd 的启动链，格式 `pid 路径 < pid 路径 …`
+- `tree`：仅 `process_priority` 行有，为启动链上每个进程实际执行的调度优先级，格式 `pid 路径=优先级 < …`；`|` 之后是不在链上的负责进程；其他用户（如 root）的进程显示“无法判定”；数值随应用前后台切换变化
 - `status`：`granted`、`denied` 或 `unknown`
 - `timestamp`：UTC 时间
 

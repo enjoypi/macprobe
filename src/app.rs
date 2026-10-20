@@ -4,6 +4,7 @@ use crate::devtools::DevToolsProbe;
 use crate::fda::FdaProbe;
 use crate::lineage::LineageInspector;
 use crate::log::{self, Ctx};
+use crate::priority::PriorityInspector;
 use crate::probe::{Inspector, Outcome, Probe, Status, overall};
 use crate::report;
 use crate::tcc::TccProbe;
@@ -58,6 +59,11 @@ pub fn main_entry() -> u8 {
         cfg: &cfg.lineage,
         messages: &cfg.messages,
     };
+    let priority = PriorityInspector {
+        lineage: &cfg.lineage,
+        cfg: &cfg.priority,
+        messages: &cfg.messages,
+    };
     let tcc = TccProbe { cfg: &cfg.tcc };
     let fda = FdaProbe { cfg: &cfg.fda };
     let ax = AxProbe { cfg: &cfg.ax };
@@ -66,7 +72,7 @@ pub fn main_entry() -> u8 {
         &args,
         &cfg,
         &ctx,
-        &[&lineage],
+        &[&lineage, &priority],
         &[&tcc, &fda, &ax, &devtools],
     )
 }

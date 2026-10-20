@@ -91,3 +91,9 @@ fn inspector_reports_info() {
     assert_eq!(logs[0]["feature"], c.lineage.id);
     assert_eq!(logs[0]["action"], "inspect");
 }
+
+#[test]
+fn ancestors_reach_root() {
+    let c = cfg().lineage;
+    assert_eq!(ancestors(&c, own()).last().unwrap().pid, c.root_pid);
+}

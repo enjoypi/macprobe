@@ -1,4 +1,4 @@
-use crate::config::{LineageConfig, Messages};
+use crate::config::{LineageConfig, Messages, PriorityConfig};
 use crate::lineage::Lineage;
 use crate::log::Ctx;
 use crate::probe::{Outcome, Status};
@@ -44,6 +44,22 @@ pub fn lineage(ctx: &Ctx, m: &Messages, cfg: &LineageConfig, l: &Lineage) {
         cfg.name,
         m.separator,
         value
+    );
+}
+
+pub fn priority(ctx: &Ctx, m: &Messages, cfg: &PriorityConfig, own: &str, tree: &str) {
+    tracing::info!(
+        request_id = %ctx.request_id,
+        user = %ctx.user,
+        host = %ctx.host,
+        feature = %cfg.id,
+        action = "inspect",
+        resp = own,
+        tree,
+        "{}{}{}",
+        cfg.name,
+        m.separator,
+        own
     );
 }
 

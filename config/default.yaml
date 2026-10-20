@@ -4,11 +4,19 @@ lineage:
   library: /usr/lib/libSystem.B.dylib
   symbol: responsibility_get_pid_responsible_for_pid
   dlopen_mode: 1
-  bsdinfo_flavor: 3
+  shortbsdinfo_flavor: 13
   path_max: 4096
   root_pid: 1
   max_depth: 64
   separator: " < "
+priority:
+  id: process_priority
+  name: 进程优先级（本进程）
+  listthreads_flavor: 6
+  threadinfo_flavor: 5
+  max_threads: 4096
+  assign: "="
+  extra: " | "
 tcc:
   id: developer_tool
   name: 开发者工具（按宿主终端或 IDE 判定）

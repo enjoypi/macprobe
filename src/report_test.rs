@@ -110,3 +110,21 @@ fn lineage_error_is_unknown() {
         )
     );
 }
+
+#[test]
+fn priority_is_info() {
+    let c = cfg();
+    let logs = capture(LevelFilter::INFO, || {
+        priority(&ctx(), &c.messages, &c.priority, "31", "9 /a=31")
+    });
+    let e = &logs[0];
+    assert_eq!(e["level"], "INFO");
+    assert_eq!(e["feature"], c.priority.id);
+    assert_eq!(e["action"], "inspect");
+    assert_eq!(e["resp"], "31");
+    assert_eq!(e["tree"], "9 /a=31");
+    assert_eq!(
+        e["message"],
+        format!("{}{}31", c.priority.name, c.messages.separator)
+    );
+}

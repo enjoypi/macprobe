@@ -1,7 +1,7 @@
 ## 设计约定
 
 - 输出只有 stdout 上的 tracing JSON Lines：每项检测一条 info 结论（`report::outcome`）与一条 debug 细节（`log::debug`）；参数错误一条 error；`--version`/`-V` 一条 info
-- 不产生授权结论的说明项实现 `Inspector`（如 `lineage`），在检测项之前输出、不参与退出码；`--version` 与参数错误时不执行
+- 不产生授权结论的说明项实现 `Inspector`（如 `lineage`、`priority`），在检测项之前输出、不参与退出码；`--version` 与参数错误时不执行
 - 退出码数值取 config `exit` 段，按 `probe::overall` 映射：任一项 unknown 或参数错误为 unknown，否则任一项 denied 为 denied，否则为 granted；版本查询为 ok
 - 检测失败（FFI、子进程、IO）归为 unknown，原因写入 detail，不 panic；panic 只用于内嵌配置损坏
 - 判定依据优先级：内核实际拦截（如 FDA 文件探测）> 公开 API > 私有 API
@@ -22,7 +22,9 @@
 
 - TCC、FDA、AX 判定的都是负责进程（宿主终端或 IDE），不是本二进制；ssh、launchd 下通常为拒绝；本二进制自身为负责进程时，ad-hoc 签名重编译后 TCC 条目失配
 - 负责进程用 libSystem 私有符号 `responsibility_get_pid_responsible_for_pid` 查询，失败返回 -1；负责进程不一定在祖先链上（如 mosh、launchd 托管的进程）
-- 父进程用 `proc_pidinfo` 的 `PROC_PIDTBSDINFO` 取，返回字节数须等于结构体大小（136）；不存在的 pid 让三个进程查询函数都返回失败，测试据此覆盖
+- `proc_pidinfo` 统一经 `pidinfo` 调用，返回字节数须等于结构体大小；不存在的 pid 让所有进程查询函数都返回失败，测试据此覆盖
+- 非 root 时 `PROC_PIDTBSDINFO`、`PROC_PIDTASKINFO`、`PROC_PIDTHREADINFO` 读不了其他用户（如 root 的 login、launchd）的进程；父进程须用 `PROC_PIDT_SHORTBSDINFO`（64 字节）取，否则启动链断在 login
+- 执行优先级取各线程 `pth_curpri` 最大值（与 `ps -o pri` 一致）：`PROC_PIDLISTTHREADS` 列线程，返回值填满缓冲区视为截断；再逐个查 `PROC_PIDTHREADINFO`（112 字节）。`pti_priority` 只是 task 基准值；数值随前后台、负载变化，测试只断言范围
 - `DevToolsSecurity -status` 退出码恒为 0，只能整句匹配输出
 - `TCCAccessPreflight`（私有 API）对不存在的服务名也返回 1，与拒绝无法区分
 - FDA：只读 open 系统 TCC.db，仅 EPERM 为拒绝，其他 errno 为 unknown；须用 `raw_os_error` 区分（`ErrorKind::PermissionDenied` 合并了 EPERM 与 EACCES）；metadata/stat 不受 FDA 拦截；公司设备 EDR 可能对访问 TCC.db 告警

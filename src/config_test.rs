@@ -19,7 +19,12 @@ fn embedded_has_expected_values() {
         c.lineage.symbol,
         "responsibility_get_pid_responsible_for_pid"
     );
-    assert_eq!((c.lineage.root_pid, c.lineage.bsdinfo_flavor), (1, 3));
+    assert_eq!((c.lineage.root_pid, c.lineage.shortbsdinfo_flavor), (1, 13));
+    assert_eq!(c.priority.id, "process_priority");
+    assert_eq!(
+        (c.priority.listthreads_flavor, c.priority.threadinfo_flavor),
+        (6, 5)
+    );
     assert_eq!(c.devtools.command, "/usr/sbin/DevToolsSecurity");
     assert_eq!(c.devtools.args, vec!["-status"]);
     assert_eq!((c.exit.granted, c.exit.denied, c.exit.unknown), (0, 1, 2));

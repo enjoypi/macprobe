@@ -58,3 +58,36 @@ fn path_of_self_is_current_exe() {
 fn path_of_missing_pid_fails() {
     assert_eq!(path(&cfg().lineage, MISSING), Err(ProbeError::PathFailed));
 }
+
+#[test]
+fn parent_of_root_owned_launchd_is_zero() {
+    assert_eq!(parent(&cfg().lineage, 1), Ok(0));
+}
+
+#[test]
+fn priority_of_self_in_range() {
+    let p = priority(&cfg().priority, own()).unwrap();
+    assert!((0..=127).contains(&p));
+}
+
+#[test]
+fn priority_of_missing_pid_fails() {
+    assert_eq!(
+        priority(&cfg().priority, MISSING),
+        Err(ProbeError::ProcInfoFailed)
+    );
+}
+
+#[test]
+fn priority_with_full_buffer_is_truncated() {
+    let mut c = cfg().priority;
+    c.max_threads = 1;
+    assert_eq!(priority(&c, own()), Err(ProbeError::ThreadsTruncated));
+}
+
+#[test]
+fn priority_without_readable_thread_fails() {
+    let mut c = cfg().priority;
+    c.threadinfo_flavor = 0;
+    assert_eq!(priority(&c, own()), Err(ProbeError::ProcInfoFailed));
+}

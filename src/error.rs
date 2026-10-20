@@ -9,4 +9,5 @@ pub enum ProbeError {
     ResponsibleFailed,
     ProcInfoFailed,
     PathFailed,
+    ThreadsTruncated,
 }

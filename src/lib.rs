@@ -7,6 +7,7 @@ pub mod error;
 pub mod fda;
 pub mod lineage;
 pub mod log;
+pub mod priority;
 pub mod probe;
 pub mod proc_ffi;
 pub mod report;
