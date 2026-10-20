@@ -1,9 +1,9 @@
-use crate::config::{LineageConfig, Messages, PriorityConfig};
+use crate::config::{Messages, PriorityConfig};
 use crate::error::ProbeError;
-use crate::lineage::{Proc, ancestors};
+use crate::lineage::{Lineage, Proc, Tracer};
 use crate::log::{self, Ctx};
 use crate::probe::Inspector;
-use crate::proc_ffi::{priority, responsible};
+use crate::proc_ffi::priority;
 use crate::report;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -42,23 +42,18 @@ pub fn own_value(t: &Tree, unknown: &str) -> String {
         .map_or(unknown.to_string(), |r| value(r, unknown))
 }
 
-pub fn measure(
-    lc: &LineageConfig,
-    cfg: &PriorityConfig,
-    ctx: &Ctx,
-    pid: i32,
-    owner: Option<i32>,
-) -> Tree {
-    let procs = ancestors(lc, pid);
-    let extra = owner
-        .filter(|r| !procs.iter().any(|p| p.pid == *r))
-        .map(|r| Proc::of(lc, r));
-    let rank = |proc: Proc| Ranked {
+pub fn measure(cfg: &PriorityConfig, ctx: &Ctx, l: &Lineage) -> Tree {
+    let extra = l
+        .responsible
+        .as_ref()
+        .ok()
+        .filter(|r| !l.procs.iter().any(|p| p.pid == r.pid));
+    let rank = |proc: &Proc| Ranked {
         priority: priority(cfg, proc.pid),
-        proc,
+        proc: proc.clone(),
     };
     let t = Tree {
-        chain: procs.into_iter().map(rank).collect(),
+        chain: l.procs.iter().map(rank).collect(),
         extra: extra.map(rank),
     };
     let all: Vec<&Ranked> = t.chain.iter().chain(t.extra.iter()).collect();
@@ -73,18 +68,16 @@ pub fn measure(
 }
 
 pub struct PriorityInspector<'a> {
-    pub lineage: &'a LineageConfig,
+    pub tracer: &'a Tracer<'a>,
     pub cfg: &'a PriorityConfig,
     pub messages: &'a Messages,
 }
 
 impl Inspector for PriorityInspector<'_> {
     fn inspect(&self, ctx: &Ctx) {
-        let pid = std::process::id() as i32;
-        let owner = responsible(self.lineage, pid).ok();
-        let t = measure(self.lineage, self.cfg, ctx, pid, owner);
+        let t = measure(self.cfg, ctx, self.tracer.get(ctx));
         let unknown = &self.messages.unknown;
-        let tree = render(&t, self.cfg, unknown, &self.lineage.separator);
+        let tree = render(&t, self.cfg, unknown, &self.tracer.cfg.separator);
         report::priority(ctx, self.messages, self.cfg, &own_value(&t, unknown), &tree);
     }
 }

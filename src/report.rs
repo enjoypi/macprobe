@@ -1,5 +1,5 @@
 use crate::config::{LineageConfig, Messages, PriorityConfig};
-use crate::lineage::Lineage;
+use crate::lineage::{Lineage, chain};
 use crate::log::Ctx;
 use crate::probe::{Outcome, Status};
 
@@ -35,7 +35,7 @@ pub fn lineage(ctx: &Ctx, m: &Messages, cfg: &LineageConfig, l: &Lineage) {
         feature = %cfg.id,
         action = "inspect",
         resp = %resp,
-        chain = %l.chain,
+        chain = %chain(&l.procs, &cfg.separator),
         "{}{}{}",
         cfg.name,
         m.separator,

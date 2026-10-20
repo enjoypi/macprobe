@@ -2,7 +2,7 @@ use crate::ax::AxProbe;
 use crate::config::{self, Config, ExitConfig};
 use crate::devtools::DevToolsProbe;
 use crate::fda::FdaProbe;
-use crate::lineage::LineageInspector;
+use crate::lineage::{LineageInspector, Tracer};
 use crate::log::{self, Ctx};
 use crate::priority::PriorityInspector;
 use crate::probe::{Inspector, Outcome, Probe, Status, overall};
@@ -55,12 +55,13 @@ pub fn main_entry() -> u8 {
     log::init(&cfg.log);
     let ctx = Ctx::generate();
     let args: Vec<String> = std::env::args().skip(1).collect();
+    let tracer = Tracer::new(&cfg.lineage);
     let lineage = LineageInspector {
-        cfg: &cfg.lineage,
+        tracer: &tracer,
         messages: &cfg.messages,
     };
     let priority = PriorityInspector {
-        lineage: &cfg.lineage,
+        tracer: &tracer,
         cfg: &cfg.priority,
         messages: &cfg.messages,
     };

@@ -70,7 +70,13 @@ fn traced(responsible: Result<Proc, ProbeError>) -> Vec<serde_json::Value> {
     let c = cfg();
     let l = Lineage {
         responsible,
-        chain: "9 /a < 1".into(),
+        procs: vec![
+            Proc {
+                pid: 9,
+                path: Some("/a".into()),
+            },
+            Proc { pid: 1, path: None },
+        ],
     };
     capture(LevelFilter::INFO, || {
         lineage(&ctx(), &c.messages, &c.lineage, &l)

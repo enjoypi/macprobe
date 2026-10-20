@@ -65,7 +65,7 @@ fn trace_self_finds_responsible() {
     let logs = capture(LevelFilter::DEBUG, || out = Some(trace(&c, &ctx(), own())));
     let out = out.unwrap();
     assert!(out.responsible.unwrap().pid > 0);
-    assert!(out.chain.starts_with(&own().to_string()));
+    assert_eq!(out.procs[0].pid, own());
     assert_eq!(logs[0]["feature"], c.id);
     assert_eq!(logs[0]["action"], "responsible");
     assert_eq!(logs[0]["req"], format!("{}({})", c.symbol, own()));
@@ -82,8 +82,9 @@ fn trace_missing_pid_is_error() {
 #[test]
 fn inspector_reports_info() {
     let c = cfg();
+    let t = Tracer::new(&c.lineage);
     let i = LineageInspector {
-        cfg: &c.lineage,
+        tracer: &t,
         messages: &c.messages,
     };
     let logs = capture(LevelFilter::INFO, || i.inspect(&ctx()));

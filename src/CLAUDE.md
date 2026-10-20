@@ -2,6 +2,7 @@
 
 - 输出只有 stdout 上的 tracing JSON Lines：每项检测一条 info 结论（`report::outcome`）与一条 debug 细节（`log::debug`）；参数错误一条 error；`--version`/`-V` 一条 info
 - 不产生授权结论的说明项实现 `Inspector`（如 `lineage`、`priority`），在检测项之前输出、不参与退出码；`--version` 与参数错误时不执行
+- 说明项共用 `lineage::Tracer`（`OnceCell`），一次运行只查一次负责进程与启动链
 - 退出码数值取 config `exit` 段，按 `probe::overall` 映射：任一项 unknown 或参数错误为 unknown，否则任一项 denied 为 denied，否则为 granted；版本查询为 ok
 - 检测失败（FFI、子进程、IO）归为 unknown，原因写入 detail，不 panic；panic 只用于内嵌配置损坏
 - 判定依据优先级：内核实际拦截（如 FDA 文件探测）> 公开 API > 私有 API
