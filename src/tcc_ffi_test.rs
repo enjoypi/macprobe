@@ -53,9 +53,9 @@ fn service_with_nul() {
 }
 
 #[test]
-fn service_not_encodable() {
-    let r = with(|c| {
-        c.cf_encoding = 0xFFFF_FFFF;
-    });
-    assert_eq!(r, Err(ProbeError::CfStringFailed));
+fn service_symbol_missing() {
+    assert_eq!(
+        with(|c| c.service = "kTCCServiceBogus".into()),
+        Err(ProbeError::SymbolMissing)
+    );
 }

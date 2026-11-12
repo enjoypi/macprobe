@@ -1,18 +1,11 @@
+use crate::cmd;
 use crate::config::DevToolsConfig;
 use crate::error::ProbeError;
 use crate::log::{self, Ctx};
 use crate::probe::{Outcome, Probe, Status};
-use std::process::Command;
 
 pub fn exec(cfg: &DevToolsConfig) -> Result<String, ProbeError> {
-    let out = Command::new(&cfg.command)
-        .args(&cfg.args)
-        .output()
-        .map_err(|_| ProbeError::SpawnFailed)?;
-    if !out.status.success() {
-        return Err(ProbeError::ExitFailed);
-    }
-    Ok(String::from_utf8_lossy(&out.stdout).into_owned())
+    cmd::stdout(&cfg.command, &cfg.args)
 }
 
 pub fn parse(stdout: &str, cfg: &DevToolsConfig) -> Status {

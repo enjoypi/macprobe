@@ -1,5 +1,6 @@
 pub mod app;
 pub mod ax;
+pub mod cmd;
 pub mod config;
 pub mod devtools;
 pub mod dl;

@@ -50,4 +50,4 @@
 
 - nightly 仅为 llvm-cov 的 branch 覆盖率；代码不得使用 nightly 特性，保证 stable 发布可编译
 - 用户级 hook 拒绝 Bash 命令文本中“点号紧跟 env”的写法；含该字样的检索与写入用 Read/Grep/Edit 工具；配置字段用 `_env` 后缀
-- 系统命令禁止用 `--help` 试探，只调用明确的只读子命令：`DevToolsSecurity` 不带参数会直接启用开发者模式；`spctl developer-mode enable-terminal --help` 会直接执行
+- 系统命令禁止用 `--help` 试探，只调用明确的只读子命令：`DevToolsSecurity` 不带参数会直接启用开发者模式；`spctl developer-mode enable-terminal --help` 会直接执行；`spctl` 只允许 `--status`，`--master-disable`、`--add`、`--assess`、`developer-mode` 等会改系统状态或联网

@@ -5,7 +5,6 @@ fn embedded_has_expected_values() {
     let c = embedded();
     assert_eq!(c.tcc.service, "kTCCServiceDeveloperTool");
     assert_eq!(c.tcc.symbol, "TCCAccessPreflight");
-    assert_eq!(c.tcc.cf_encoding, 0x0800_0100);
     assert_eq!(c.tcc.granted, vec![0]);
     assert_eq!(c.tcc.denied, vec![1, 2]);
     assert_eq!(

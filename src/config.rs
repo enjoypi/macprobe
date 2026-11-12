@@ -49,7 +49,6 @@ pub struct TccConfig {
     pub symbol: String,
     pub service: String,
     pub dlopen_mode: i32,
-    pub cf_encoding: u32,
     pub granted: Vec<i32>,
     pub denied: Vec<i32>,
 }

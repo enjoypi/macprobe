@@ -24,7 +24,6 @@ tcc:
   symbol: TCCAccessPreflight
   service: kTCCServiceDeveloperTool
   dlopen_mode: 1
-  cf_encoding: 134217984
   granted: [0]
   denied: [1, 2]
 fda:

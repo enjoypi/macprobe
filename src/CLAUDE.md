@@ -26,9 +26,9 @@
 - `proc_pidinfo` 统一经 `pidinfo` 调用，返回字节数须等于结构体大小；不存在的 pid 让所有进程查询函数都返回失败，测试据此覆盖
 - 非 root 时 `PROC_PIDTBSDINFO`、`PROC_PIDTASKINFO`、`PROC_PIDTHREADINFO` 读不了其他用户（如 root 的 login、launchd）的进程；父进程须用 `PROC_PIDT_SHORTBSDINFO`（64 字节）取，否则启动链断在 login
 - 执行优先级取各线程 `pth_curpri` 最大值（与 `ps -o pri` 一致）：`PROC_PIDLISTTHREADS` 列线程，返回值填满缓冲区视为截断；再逐个查 `PROC_PIDTHREADINFO`（112 字节）。`pti_priority` 只是 task 基准值；数值随前后台、负载变化，测试只断言范围
-- `DevToolsSecurity -status` 退出码恒为 0，只能整句匹配输出
-- `TCCAccessPreflight`（私有 API）对不存在的服务名也返回 1，与拒绝无法区分
+- 子进程统一经 `cmd::stdout` 调用，只判启动失败、不看退出码；`DevToolsSecurity -status` 退出码恒为 0，只能整句匹配输出
+- `TCCAccessPreflight`（私有 API）对不存在的服务名也返回 1，与拒绝无法区分；服务参数须 dlsym 取 TCC.framework 导出的 CFString 常量（如 `kTCCServiceDeveloperTool`），符号缺失即 `SymbolMissing`
+- macOS 26 实测：本地编译、无隔离标记的程序首次运行不被 Gatekeeper 扫描（首次与第二次耗时均约 2ms），与负责进程是否获开发者工具授权无关，故不设“免扫描”检测项；ExecPolicy 库为 root 0600，不可读
 - FDA：只读 open 系统 TCC.db，仅 EPERM 为拒绝，其他 errno 为 unknown；须用 `raw_os_error` 区分（`ErrorKind::PermissionDenied` 合并了 EPERM 与 EACCES）；metadata/stat 不受 FDA 拦截；公司设备 EDR 可能对访问 TCC.db 告警
 - `AXIsProcessTrusted` 只返回真假（异常也为假）；禁用 `AXIsProcessTrustedWithOptions` 的 prompt 选项（会弹窗改系统状态）
 - 公开框架用 `#[link]` 直接链接，私有框架用 dlopen；C 的 `Boolean` 用 `u8` 接收
-- `CFStringCreateWithCString` 用 ASCII 转非 ASCII 不会返回 NULL，只有 `kCFStringEncodingInvalidId`（0xFFFFFFFF）会；测试据此覆盖失败分支

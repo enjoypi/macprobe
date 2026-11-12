@@ -34,16 +34,15 @@ fn exec_spawn_failure() {
 }
 
 #[test]
-fn exec_nonzero_exit() {
+fn probe_nonzero_exit_is_unknown() {
     let mut c = cfg().devtools;
     c.command = "/usr/bin/false".into();
     c.args = vec![];
-    assert_eq!(exec(&c), Err(ProbeError::ExitFailed));
-}
-
-#[test]
-fn exec_returns_stdout() {
-    assert_eq!(exec(&echo("hi")), Ok("hi\n".into()));
+    let mut out = None;
+    capture(LevelFilter::INFO, || {
+        out = Some(DevToolsProbe { cfg: &c }.check(&ctx()))
+    });
+    assert_eq!(out.unwrap().status, Status::Unknown);
 }
 
 #[test]
